@@ -1,0 +1,157 @@
+.blocks_section_header {
+    width: 100%;
+    background: #000066;
+    color: #fff;
+    border-radius: 9px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-weight: bold;
+    text-align: center;
+}
+
+.blocks_section_content {
+    display: flex;
+    box-sizing: border-box;
+}
+
+.blocks_section_content .aside {
+    width: 30%;
+    min-width: 200px;
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 10px;
+    border-right: 2px solid #003366;
+    min-height: 300px;
+}
+
+.blocks_section_content .aside .total_blocks {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.blocks_section_content .aside .selected_blocks {
+    font-size: 18px;
+}
+
+.blocks_section_content .aside .green_blocks {
+    font-size: 15px;
+    color: #006600;
+}
+
+.blocks_section_content .aside .red_blocks {
+    font-size: 15px;
+    color: #990000;
+}
+
+.blocks_section_content .aside .add_block {
+    font-size: 15px;
+    color: #fff;
+    background: #000066;
+    border-radius: 5px;
+    border: 0;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-top: 20px;
+}
+
+.blocks_section_content .aside .add_block::before {
+    content: "+";
+    position: relative;
+    left: -2px;
+}
+
+.blocks_section_content .aside .add_block_container {
+    background: #000066;
+    border-radius: 5px;
+    position: relative;
+    top: -6px;
+    padding: 10px;
+    text-align: center;
+    opacity: 0;
+    transition: 500ms;
+    visibility: hidden;
+ }
+
+
+.blocks_section_content .aside .add_block_container.visible {
+    visibility: visible;
+    transition:  00ms;
+    opacity: 1;
+}
+
+
+.blocks_section_content .aside .add_block_container .add_block_simple,
+.blocks_section_content .aside .add_block_container .add_block_hard {
+    font-size: 15px;
+    color: #fff;
+    background: rgba(42, 96, 155, 0.76);
+    border-radius: 5px;
+    border: 0;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 5px 0;
+    transition: 500ms;
+}
+
+.blocks_section_content .aside .add_block_container .add_block_simple:hover,
+.blocks_section_content .aside .add_block_container .add_block_hard:hover {
+    background: #fff;
+    transition: 500ms;
+    color: #000;
+}
+
+.blocks_section_content .article {
+    width: 70%;
+    min-width: 200px;
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 10px;
+    background: #fff;
+    border-radius: 10px
+}
+
+.blocks_section_content .article .block_simple {
+    border: 5px solid #ccc;
+    background: #eee;
+    border-radius: 5px;
+    padding: 20px 10px 5px 10px;
+    cursor: pointer;
+    margin: 10px 0;
+    pointer-events: none;
+    position: relative;
+}
+
+.blocks_section_content .article .block_hard {
+    border: 5px solid #ccc;
+    background: #dd1144;
+    color: #fff;
+    border-radius: 5px;
+    padding: 20px 10px 5px 10px;
+    cursor: pointer;
+    margin: 10px 0;
+    position: relative;
+}
+
+.blocks_section_content .article .block_hard .close::before,
+.blocks_section_content .article .block_simple .close::before {
+    content: "+";
+    font-weight: bold;
+    font-size: 30px;
+    transform: rotate(45deg);
+    position: absolute;
+    right: 5px;
+    top: -5px;
+}
+
+.blocks_section_content .article .block_hard .selected,
+.blocks_section_content .article .block_simple .selected {
+    border-color: #000066;
+}
+
+.blocks_section_content .article .block_hard .close:hover::before{
+    color: #000;
+}
+
+.blocks_section_content .article .block_simple .close:hover::before {
+    color: #f00;
+}

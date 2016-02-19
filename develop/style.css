@@ -1,0 +1,12 @@
+* {
+    font-family: Calibri, Arial;
+    font-size: 20px;
+}
+#divBlocks {
+    border: 1px solid #000066;
+    border-radius: 10px;
+    background: #f8f8ff;
+    margin: 20px auto;
+    width: 50%;
+    min-height: 200px
+}
