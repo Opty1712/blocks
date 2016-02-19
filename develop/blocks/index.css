@@ -33,12 +33,12 @@
     font-size: 18px;
 }
 
-.blocks_section_content .aside .green_blocks {
+.blocks_section_content .aside .selected_hard_blocks {
     font-size: 15px;
     color: #006600;
 }
 
-.blocks_section_content .aside .red_blocks {
+.blocks_section_content .aside .selected_changed_hard_blocks {
     font-size: 15px;
     color: #990000;
 }
@@ -75,7 +75,7 @@
 
 .blocks_section_content .aside .add_block_container.visible {
     visibility: visible;
-    transition:  00ms;
+    transition: 500ms;
     opacity: 1;
 }
 
@@ -117,13 +117,12 @@
     padding: 20px 10px 5px 10px;
     cursor: pointer;
     margin: 10px 0;
-    pointer-events: none;
     position: relative;
 }
 
 .blocks_section_content .article .block_hard {
     border: 5px solid #ccc;
-    background: #dd1144;
+    background: #006600;
     color: #fff;
     border-radius: 5px;
     padding: 20px 10px 5px 10px;
@@ -143,9 +142,18 @@
     top: -5px;
 }
 
-.blocks_section_content .article .block_hard .selected,
-.blocks_section_content .article .block_simple .selected {
+.blocks_section_content .article .block_hard.selected,
+.blocks_section_content .article .block_simple.selected {
     border-color: #000066;
+    text-shadow: 0 0 10px #000
+}
+
+.blocks_section_content .article .block_hard.selected {
+    border-color: #000066;
+    text-shadow: 0 0 10px #000;
+}
+.blocks_section_content .article .block_hard.changed {
+    background: #dd1144;
 }
 
 .blocks_section_content .article .block_hard .close:hover::before{

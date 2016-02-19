@@ -11,7 +11,7 @@ Working under WINDOWS and:
 
 #Installation
 
-clone CHAT to the project folder `git clone https://github.com/Opty1712/blocks.git`
+clone BLOCKS to the project folder `git clone https://github.com/Opty1712/blocks.git`
 
 #Development
 
