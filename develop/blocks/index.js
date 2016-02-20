@@ -17,11 +17,6 @@ export default function SimpleTextBlocks (options) {
       */
      this._elem = options.elem;
 
-    /**
-     * init counters
-     */
-     this._totalBlocksCount = this._selectedBlocksCount = this._selectedHardBlocksCount = this._selectedChangedHardBlocksCount = 0;
-
      /**
       * generate HTML template from jade JS
       */
@@ -31,12 +26,6 @@ export default function SimpleTextBlocks (options) {
      * define area where will be blocks appears
      */
     this._blocksArea = this._elem.querySelector (".article");
-
-
-    /**
-     * add listeners for all clicks and doubleclicks inside blocks*/
-    this._blocksArea.addEventListener( "click" , _doAfterClickEvent.bind(this));
-    this._blocksArea.addEventListener( "dblclick" , _doChangeColor.bind(this));
 
 
      /**
@@ -61,16 +50,6 @@ export default function SimpleTextBlocks (options) {
 
 
 
-    /**
-     * define counters area
-     */
-    this._totalBlocks = this._elem.querySelector (".total_blocks span");
-    this._selectedBlocks = this._elem.querySelector (".selected_blocks span");
-    this._selectedHardBlocks = this._elem.querySelector (".selected_hard_blocks span");
-    this._selectedChangedHardBlocks = this._elem.querySelector (".selected_changed_hard_blocks span");
-
-
-
      /**
       * show div containing buttons for adding blocks
       */
@@ -91,142 +70,243 @@ export default function SimpleTextBlocks (options) {
 
 
 
+
+
+
+
+    /**
+     * new simple text block constructor
+     */
+    function _SimpleBlockConstructor () {
+
+        /**
+         * initial settings
+         */
+        this.div = document.createElement('div');
+        this.div.className = "block_simple";
+        this.div.innerHTML = Math.random() + "<div class='close'></div>";
+        SimpleTextBlocks.prototype.totalBlocksCount++;
+        SimpleTextBlocks.prototype.countBlocks();
+
+
+
+        /**
+         * delete blocks
+         */
+        this._doDeleteBlock = function (target) {
+            var del = target.parentNode;
+            var parent = del.parentNode;
+
+            parent.removeChild(del);
+
+            SimpleTextBlocks.prototype.totalBlocksCount--;
+            SimpleTextBlocks.prototype.countBlocks();
+        };
+
+
+
+
+        /**
+         * select blocks
+         */
+        this._doSelect = function (target) {
+
+            if (target.classList.contains("selected")) {
+
+                target.classList.remove("selected");
+                SimpleTextBlocks.prototype.selectedBlocksCount--;
+
+            } else {
+
+                target.classList.add("selected");
+                SimpleTextBlocks.prototype.selectedBlocksCount++;
+            }
+
+            SimpleTextBlocks.prototype.countBlocks();
+        };
+
+
+        /**
+         * listen for the click and decide what to do
+         */
+        this._doAfterClickEvent = function  (event) {
+            var target = event.target;
+
+            // if click on the close icon
+            if (target.className == "close") {
+                this._doDeleteBlock (target);
+
+            // if click on the div
+            } else {
+                this._doSelect (target);
+            }
+        };
+
+        this.div.addEventListener( "click" , this._doAfterClickEvent.bind(this));
+
+    }
+
+
     /**
      * creates new simple text block
      */
     function _createNewSimpleBlock () {
-        var div = document.createElement('div');
-        div.className = "block_simple";
-        div.innerHTML = "Привет, я простой блок, меня можно выделить или удалить!<div class='close'></div>";
-        this._blocksArea.appendChild(div);
-
-        this._totalBlocksCount++;
-        _countBlocks.call (this);
+        var block = new _SimpleBlockConstructor ();
+        this._blocksArea.appendChild(block.div);
     }
 
+
+
+    /**
+     * new hard text block constructor
+     */
+    function _HardBlockConstructor () {
+
+        _SimpleBlockConstructor.call (this);
+
+        this.div.className = "block_hard";
+        this.div.innerHTML = Math.random() + "<div class='close'></div>";
+
+
+
+        /**
+         * delete blocks - overwrite inherital function
+         */
+        this._doDeleteBlock = function (target) {
+            var result = confirm("Действительно удалить?");
+            if (result) {
+                SimpleTextBlocks.prototype.totalBlocksCount--;
+
+                var del = target.parentNode;
+                var parent = del.parentNode;
+
+                if (del.classList.contains("selected")) {
+                    SimpleTextBlocks.prototype.selectedBlocksCount--;
+                    if (del.classList.contains("changed")) {
+                        SimpleTextBlocks.prototype.selectedChangedHardBlocksCount--;
+                    } else {
+                        SimpleTextBlocks.prototype.selectedHardBlocksCount--;
+                    }
+                }
+
+                parent.removeChild(del);
+
+                SimpleTextBlocks.prototype.countBlocks();
+
+            }
+        };
+
+
+        /**
+         * change color blocks
+         */
+        this._doChangeColor = function (event) {
+            var target = event.target;
+
+
+
+            if (target.classList.contains("changed")) {
+                target.classList.remove("changed");
+                if (target.classList.contains("selected")) {
+                    SimpleTextBlocks.prototype.selectedHardBlocksCount++;
+                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount--;
+                }
+            } else {
+                target.classList.add("changed");
+                if (target.classList.contains("selected")) {
+                    SimpleTextBlocks.prototype.selectedHardBlocksCount--;
+                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount++;
+                }
+            }
+
+            SimpleTextBlocks.prototype.countBlocks();
+        };
+
+
+
+
+        /**
+         * select blocks - overwrite inherital function
+         */
+        this._doSelect = function (target) {
+
+            if (target.classList.contains("selected")) {
+
+                target.classList.remove("selected");
+                SimpleTextBlocks.prototype.selectedBlocksCount--;
+
+                if (target.classList.contains("changed")) {
+                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount--;
+                } else {
+                    SimpleTextBlocks.prototype.selectedHardBlocksCount--;
+                }
+
+            } else {
+
+                target.classList.add("selected");
+                SimpleTextBlocks.prototype.selectedBlocksCount++;
+
+                if (target.classList.contains("changed")) {
+                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount++;
+                } else {
+                    SimpleTextBlocks.prototype.selectedHardBlocksCount++;
+                }
+
+            }
+
+            SimpleTextBlocks.prototype.countBlocks();
+        };
+
+
+        this.div.addEventListener( "dblclick" , this._doChangeColor.bind(this));
+    }
 
 
     /**
      * creates new hard text block
      */
     function _createNewHardBlock () {
-        var div = document.createElement('div');
-        div.className = "block_hard";
-        div.innerHTML = "Привет, а я сложный блок, у меня еще можно и цвет поменять, если кликнуть дважды!<div class='close'></div>";
-        this._blocksArea.appendChild(div);
-
-        this._totalBlocksCount++;
-        _countBlocks.call (this);
-
+        var block = new _HardBlockConstructor ();
+        this._blocksArea.appendChild(block.div);
     }
 
-
-
-    /**
-     * remove or select opened blocks
-     */
-    function _doAfterClickEvent (event) {
-        var target = event.target;
-
-        // if click on the close icon
-        if (target.className == "close") {
-            _doDeleteBlock.call (this, target);
-        }
-
-        // if click on the block
-        if (target.classList.contains("block_hard") || target.classList.contains("block_simple")) {
-            _doSelect.call (this, target);
-        }
-    }
-
-
-
-    /**
-     * delete blocks
-     */
-    function _doDeleteBlock (target) {
-        var del = target.parentNode;
-
-        if (del.classList.contains("block_simple")) {
-
-            this._totalBlocksCount--;
-            if (del.classList.contains ("selected")) this._selectedBlocksCount--;
-
-            this._blocksArea.removeChild(del);
-
-        } else {
-
-            var result = confirm("Действительно удалить?");
-            if (result) {
-
-                this._totalBlocksCount--;
-                if (del.classList.contains ("selected")) this._selectedBlocksCount--;
-
-                this._blocksArea.removeChild(del);
-            }
-        }
-
-        _countBlocks.call (this);
-    }
-
-
-
-    /**
-     * select blocks
-     */
-    function _doSelect (target) {
-        if (target.classList.contains("selected")) {
-            if (target.classList.contains ("changed")) this._selectedChangedHardBlocksCount--;
-            this._selectedBlocksCount--;
-
-            target.classList.remove("selected");
-
-        } else {
-
-            if (target.classList.contains ("changed")) this._selectedChangedHardBlocksCount++;
-            this._selectedBlocksCount++;
-
-            target.classList.add("selected");
-        }
-
-        _countBlocks.call (this);
-    }
-
-
-
-    /**
-     * change color blocks
-     */
-    function _doChangeColor (event) {
-        var target = event.target;
-        if (!target.classList.contains("block_hard")) return;
-        if (target.classList.contains("changed")) {
-            target.classList.remove("changed");
-            this._selectedChangedHardBlocksCount--;
-        } else {
-            target.classList.add("changed");
-            this._selectedChangedHardBlocksCount++;
-        }
-        _countBlocks.call (this);
-    }
 
 
 
     /**
      * refresh counting of blocks
      */
-    function _countBlocks () {
-        this._totalBlocks.innerHTML = " " + this._totalBlocksCount;
-        this._selectedBlocks.innerHTML = " " + this._selectedBlocksCount;
-        this._selectedHardBlocks.innerHTML = " " + this._selectedHardBlocksCount;
-        this._selectedChangedHardBlocks.innerHTML = " " + this._selectedChangedHardBlocksCount;
-    }
+    SimpleTextBlocks.prototype.countBlocks = function () {
+        this._totalBlocks.innerHTML = " " + SimpleTextBlocks.prototype.totalBlocksCount;
+        this._selectedBlocks.innerHTML = " " + SimpleTextBlocks.prototype.selectedBlocksCount;
+        this._selectedHardBlocks.innerHTML = " " + SimpleTextBlocks.prototype.selectedHardBlocksCount;
+        this._selectedChangedHardBlocks.innerHTML = " " + SimpleTextBlocks.prototype.selectedChangedHardBlocksCount;
+    };
 
 
 
+    /**
+     * init counters in prototype
+     */
+    SimpleTextBlocks.prototype.totalBlocksCount =
+        SimpleTextBlocks.prototype.selectedBlocksCount =
+        SimpleTextBlocks.prototype.selectedHardBlocksCount =
+        SimpleTextBlocks.prototype.selectedChangedHardBlocksCount =
+    0;
+
+
+
+    /**
+     * define counters area in prototype
+     */
+    SimpleTextBlocks.prototype._totalBlocks = this._elem.querySelector (".total_blocks span");
+    SimpleTextBlocks.prototype._selectedBlocks = this._elem.querySelector (".selected_blocks span");
+    SimpleTextBlocks.prototype._selectedHardBlocks = this._elem.querySelector (".selected_hard_blocks span");
+    SimpleTextBlocks.prototype._selectedChangedHardBlocks = this._elem.querySelector (".selected_changed_hard_blocks span");
 
 
     _createNewSimpleBlock.call (this);
     _createNewHardBlock.call (this);
 
 }
+
