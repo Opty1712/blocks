@@ -28,6 +28,20 @@ export default function SimpleTextBlocks (options) {
     this._blocksArea = this._elem.querySelector (".article");
 
 
+    /**
+     * add observer listener: if anything changes inside _blocksArea
+     */
+    var self = this;
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            self.countBlocks();
+        });
+    });
+
+    var configObserver = { attributes: true, childList: true, characterData: true, subtree: true };
+    observer.observe(this._blocksArea, configObserver);
+
+
      /**
       * add listeners for show/hide "add block" button
       */
@@ -47,6 +61,18 @@ export default function SimpleTextBlocks (options) {
     this._addBlockSimple.addEventListener( "click" , _createNewSimpleBlock.bind(this));
     this._addBlockHard = this._elem.querySelector (".add_block_hard");
     this._addBlockHard.addEventListener( "click" , _createNewHardBlock.bind(this));
+
+
+
+
+    /**
+     * define counters area
+     */
+    this._totalBlocks = this._elem.querySelector (".total_blocks span");
+    this._selectedBlocks = this._elem.querySelector (".selected_blocks span");
+    this._selectedHardBlocks = this._elem.querySelector (".selected_hard_blocks span");
+    this._selectedChangedHardBlocks = this._elem.querySelector (".selected_changed_hard_blocks span");
+
 
 
 
@@ -85,8 +111,6 @@ export default function SimpleTextBlocks (options) {
         this.div = document.createElement('div');
         this.div.className = "block_simple";
         this.div.innerHTML = Math.random() + "<div class='close'></div>";
-        SimpleTextBlocks.prototype.totalBlocksCount++;
-        SimpleTextBlocks.prototype.countBlocks();
 
 
 
@@ -96,11 +120,7 @@ export default function SimpleTextBlocks (options) {
         this._doDeleteBlock = function (target) {
             var del = target.parentNode;
             var parent = del.parentNode;
-
             parent.removeChild(del);
-
-            SimpleTextBlocks.prototype.totalBlocksCount--;
-            SimpleTextBlocks.prototype.countBlocks();
         };
 
 
@@ -112,17 +132,10 @@ export default function SimpleTextBlocks (options) {
         this._doSelect = function (target) {
 
             if (target.classList.contains("selected")) {
-
                 target.classList.remove("selected");
-                SimpleTextBlocks.prototype.selectedBlocksCount--;
-
             } else {
-
                 target.classList.add("selected");
-                SimpleTextBlocks.prototype.selectedBlocksCount++;
             }
-
-            SimpleTextBlocks.prototype.countBlocks();
         };
 
 
@@ -175,23 +188,10 @@ export default function SimpleTextBlocks (options) {
         this._doDeleteBlock = function (target) {
             var result = confirm("Действительно удалить?");
             if (result) {
-                SimpleTextBlocks.prototype.totalBlocksCount--;
 
                 var del = target.parentNode;
                 var parent = del.parentNode;
-
-                if (del.classList.contains("selected")) {
-                    SimpleTextBlocks.prototype.selectedBlocksCount--;
-                    if (del.classList.contains("changed")) {
-                        SimpleTextBlocks.prototype.selectedChangedHardBlocksCount--;
-                    } else {
-                        SimpleTextBlocks.prototype.selectedHardBlocksCount--;
-                    }
-                }
-
                 parent.removeChild(del);
-
-                SimpleTextBlocks.prototype.countBlocks();
 
             }
         };
@@ -203,23 +203,11 @@ export default function SimpleTextBlocks (options) {
         this._doChangeColor = function (event) {
             var target = event.target;
 
-
-
             if (target.classList.contains("changed")) {
                 target.classList.remove("changed");
-                if (target.classList.contains("selected")) {
-                    SimpleTextBlocks.prototype.selectedHardBlocksCount++;
-                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount--;
-                }
             } else {
                 target.classList.add("changed");
-                if (target.classList.contains("selected")) {
-                    SimpleTextBlocks.prototype.selectedHardBlocksCount--;
-                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount++;
-                }
             }
-
-            SimpleTextBlocks.prototype.countBlocks();
         };
 
 
@@ -231,35 +219,16 @@ export default function SimpleTextBlocks (options) {
         this._doSelect = function (target) {
 
             if (target.classList.contains("selected")) {
-
                 target.classList.remove("selected");
-                SimpleTextBlocks.prototype.selectedBlocksCount--;
-
-                if (target.classList.contains("changed")) {
-                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount--;
-                } else {
-                    SimpleTextBlocks.prototype.selectedHardBlocksCount--;
-                }
-
             } else {
-
                 target.classList.add("selected");
-                SimpleTextBlocks.prototype.selectedBlocksCount++;
-
-                if (target.classList.contains("changed")) {
-                    SimpleTextBlocks.prototype.selectedChangedHardBlocksCount++;
-                } else {
-                    SimpleTextBlocks.prototype.selectedHardBlocksCount++;
-                }
-
             }
-
-            SimpleTextBlocks.prototype.countBlocks();
         };
 
 
         this.div.addEventListener( "dblclick" , this._doChangeColor.bind(this));
     }
+
 
 
     /**
@@ -273,36 +242,19 @@ export default function SimpleTextBlocks (options) {
 
 
 
+
+
     /**
      * refresh counting of blocks
      */
-    SimpleTextBlocks.prototype.countBlocks = function () {
-        this._totalBlocks.innerHTML = " " + SimpleTextBlocks.prototype.totalBlocksCount;
-        this._selectedBlocks.innerHTML = " " + SimpleTextBlocks.prototype.selectedBlocksCount;
-        this._selectedHardBlocks.innerHTML = " " + SimpleTextBlocks.prototype.selectedHardBlocksCount;
-        this._selectedChangedHardBlocks.innerHTML = " " + SimpleTextBlocks.prototype.selectedChangedHardBlocksCount;
+    this.countBlocks = function () {
+        this._totalBlocks.innerText = this._blocksArea.querySelectorAll ("div:not(.close)").length;
+        this._selectedBlocks.innerText = this._blocksArea.querySelectorAll ("div.selected").length;
+        this._selectedHardBlocks.innerText = this._blocksArea.querySelectorAll ("div.selected:not(.changed)").length;
+        this._selectedChangedHardBlocks.innerText = this._blocksArea.querySelectorAll ("div.selected.changed").length;
+
     };
 
-
-
-    /**
-     * init counters in prototype
-     */
-    SimpleTextBlocks.prototype.totalBlocksCount =
-        SimpleTextBlocks.prototype.selectedBlocksCount =
-        SimpleTextBlocks.prototype.selectedHardBlocksCount =
-        SimpleTextBlocks.prototype.selectedChangedHardBlocksCount =
-    0;
-
-
-
-    /**
-     * define counters area in prototype
-     */
-    SimpleTextBlocks.prototype._totalBlocks = this._elem.querySelector (".total_blocks span");
-    SimpleTextBlocks.prototype._selectedBlocks = this._elem.querySelector (".selected_blocks span");
-    SimpleTextBlocks.prototype._selectedHardBlocks = this._elem.querySelector (".selected_hard_blocks span");
-    SimpleTextBlocks.prototype._selectedChangedHardBlocks = this._elem.querySelector (".selected_changed_hard_blocks span");
 
 
     _createNewSimpleBlock.call (this);

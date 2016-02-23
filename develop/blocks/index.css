@@ -163,3 +163,7 @@
 .blocks_section_content .article .block_simple .close:hover::before {
     color: #f00;
 }
+
+.aside span {
+    margin-left: 5px;
+}
